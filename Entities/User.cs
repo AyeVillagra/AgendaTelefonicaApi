@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AgendaApi.Models.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgendaApi.Entities
@@ -16,5 +17,7 @@ namespace AgendaApi.Entities
         [Required]
         public string UserName { get; set; }
         public ICollection<Contact> Contacts { get; set; }
+        public Rol Rol { get; set; } = Rol.User;
+        public State state { get; set; } = State.Active;
     }
 }

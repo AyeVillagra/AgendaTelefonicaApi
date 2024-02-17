@@ -1,7 +1,8 @@
 ﻿using AgendaApi.Data.Repository.Implementations;
 using AgendaApi.Data.Repository.Interfaces;
 using AgendaApi.Entities;
-using AgendaApi.Models;
+using AgendaApi.Models.DTOs;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,66 +16,69 @@ namespace AgendaApi.Controllers
     public class ContactController : ControllerBase
     {
         private readonly IContactRepository _contactRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ContactController(IContactRepository contactRepository)
+        public ContactController(IContactRepository contactRepository, IUserRepository userRepository)
         {
             _contactRepository = contactRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-
-            return Ok(_contactRepository.GetAll());
+            try
+            {
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
+                var contacts = _contactRepository.GetAllByUser(userId);
+                return Ok(contacts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAll: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
         }
 
         [HttpGet]
         [Route("{Id}")]
         public IActionResult GetOne(int Id)
         {
-            return Ok(_contactRepository.GetAll().Where(x => x.Id == Id));
+            return Ok(_contactRepository.GetContactById(Id));
         }
 
 
         [HttpPost]
-        public IActionResult CreateContact(CreateAndUpdateContact createContactDto)
+        public IActionResult CreateContact(CreateAndUpdateContactDto createContactDto)
         {
             try
             {
-                _contactRepository.Create(createContactDto);
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
+                Contact c = _contactRepository.Create(createContactDto, userId);
+                return Created("Created", c);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            return Created("Created", createContactDto);
+            
         }
 
         [HttpPut]
-        public IActionResult UpdateContact(CreateAndUpdateContact dto)
+        [Route("{Id}")]
+        public IActionResult UpdateContact(CreateAndUpdateContactDto dto)
         {
-            try
-            {
-                _contactRepository.Update(dto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
+            _contactRepository.Update(dto);
             return NoContent();
         }
 
         [HttpDelete]
-        public IActionResult DeleteContactById(int id)
+        [Route("{Id}")]
+        public IActionResult DeleteContactById(int Id)
         {
-            try
-            {
-                _contactRepository.Delete(id);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
+            _contactRepository.Delete(Id);
             return Ok();
         }
     }

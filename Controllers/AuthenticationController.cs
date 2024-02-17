@@ -1,6 +1,6 @@
 ﻿using AgendaApi.Data.Repository.Interfaces;
 using AgendaApi.Entities;
-using AgendaApi.Models;
+using AgendaApi.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,7 +16,7 @@ namespace AgendaApi.Controllers
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
 
-        public AuthenticationController(IConfiguration config, IUserRepository userRepository)
+        public AuthenticationController(IConfiguration config, IUserRepository userRepository) // constructor
         {
             _config = config; //Hacemos la inyección para poder usar el appsettings.json
             this._userRepository = userRepository;
@@ -24,7 +24,7 @@ namespace AgendaApi.Controllers
         }
 
         [HttpPost("authenticate")] //Vamos a usar un POST ya que debemos enviar los datos para hacer el login
-        public ActionResult<string> Autenticar(AuthenticationRequestBody authenticationRequestBody) //Enviamos como parámetro la clase que creamos arriba
+        public IActionResult Autenticar(AuthenticationRequestBody authenticationRequestBody) //Enviamos como parámetro la clase que creamos arriba
         {
             //Paso 1: Validamos las credenciales
             var user = _userRepository.ValidateUser(authenticationRequestBody); //Lo primero que hacemos es llamar a una función que valide los parámetros que enviamos.
@@ -42,6 +42,7 @@ namespace AgendaApi.Controllers
             claimsForToken.Add(new Claim("sub", user.Id.ToString())); //"sub" es una key estándar que significa unique user identifier, es decir, si mandamos el id del usuario por convención lo hacemos con la key "sub".
             claimsForToken.Add(new Claim("given_name", user.Name)); //Lo mismo para given_name y family_name, son las convenciones para nombre y apellido. Ustedes pueden usar lo que quieran, pero si alguien que no conoce la app
             claimsForToken.Add(new Claim("family_name", user.LastName)); //quiere usar la API por lo general lo que espera es que se estén usando estas keys.
+            claimsForToken.Add(new Claim("role", user.Rol.ToString()));
 
             var jwtSecurityToken = new JwtSecurityToken( //agregar using System.IdentityModel.Tokens.Jwt; Acá es donde se crea el token con toda la data que le pasamos antes.
               _config["Authentication:Issuer"],

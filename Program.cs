@@ -8,10 +8,15 @@ using System.Text;
 using System.Text.Json.Serialization;
 using AgendaApi.Data.Repository.Interfaces;
 using AutoMapper;
-using AgendaApi.Profiles;
 using AgendaApi.Data.Repository.Implementations;
+using AgendaApi.Models.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options => options.AddPolicy("AllowWebapp",
+                                    builder => builder.AllowAnyOrigin()
+                                                      .AllowAnyHeader()
+                                                      .AllowAnyMethod()));
 
 // Add services to the container.
 
@@ -40,7 +45,8 @@ builder.Services.AddSwaggerGen(setupAction =>
     });
 });
 
-builder.Services.AddDbContext<AgendaContext>(dbContextOptions => dbContextOptions.UseSqlite(
+builder.Services.AddDbContext<AgendaContext>
+    (dbContextOptions => dbContextOptions.UseSqlite(
     builder.Configuration["ConnectionStrings:AgendaAPIDBConnectionString"]));
 
 builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntenticación que tenemos que elegir después en PostMan para pasarle el token
@@ -81,6 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowWebapp");
 
 app.UseHttpsRedirection();
 

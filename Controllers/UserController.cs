@@ -1,49 +1,64 @@
-﻿using AgendaApi.Data.Repository.Implementations;
-using AgendaApi.Data.Repository.Interfaces;
+﻿using AgendaApi.Data.Repository.Interfaces;
 using AgendaApi.Entities;
-using AgendaApi.Models;
+using AgendaApi.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace AgendaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository)
+        private readonly IMapper _mapper;
+        
+        public UserController(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_userRepository.GetAll());
-            //try
-            //{
-            //    return Ok(_userRepository.GetAll());
-            //}
-            //catch (Exception ex)
-            //{
-            //    return BadRequest(ex.Message);
-            //}
+            try
+            {                
+                var users = _userRepository.GetAll();
+                var usersDTO = _mapper.Map<IEnumerable<UserDto>>(users);
+                return Ok(usersDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("{Id}")]
         public IActionResult GetOneById(int Id)
         {
-            try
+            User? user = _userRepository.GetById(Id);
+
+            if (user != null)
             {
-                return Ok(_userRepository.GetById(Id));
+                var userDTO = _mapper.Map<UserDto>(user);
+                try
+                {
+                    return Ok(userDTO);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                return BadRequest(ex.Message);
+                return NotFound(); 
             }
+
         }
 
         [HttpPost]
@@ -60,11 +75,12 @@ namespace AgendaApi.Controllers
             return Created("Created", dto);
         }
 
-        [HttpPut]
+        [HttpPut("{Id}")]
         public IActionResult UpdateUser(CreateAndUpdateUserDto dto)
         {
             try
             {
+                var user = _mapper.Map<User>(dto);
                 _userRepository.Update(dto);
             }
             catch (Exception ex)
@@ -76,17 +92,30 @@ namespace AgendaApi.Controllers
 
         [HttpDelete]
         [Route("{Id}")]
-        public IActionResult DeleteUser(int Id)
-        {
+        public IActionResult DeleteUser(int Id) {
             try
             {
-                _userRepository.Delete(Id);
+                var user = _userRepository.GetById(Id);
+
+                if (user != null && user.Rol == 0)
+                {
+                    _userRepository.Delete(Id);
+                }
+                else if (user != null)
+                {
+                    _userRepository.Archive(Id);
+                }
+                else
+                {
+                    return NotFound();
+                }
+
+                return StatusCode(204);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
-            return Ok();
         }
     }
 }

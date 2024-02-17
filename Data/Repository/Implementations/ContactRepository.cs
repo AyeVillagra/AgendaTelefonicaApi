@@ -1,7 +1,9 @@
 ﻿using AgendaApi.Data.Repository.Interfaces;
 using AgendaApi.Entities;
-using AgendaApi.Models;
+using AgendaApi.Models.DTOs;
 using AutoMapper;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgendaApi.Data.Repository.Implementations
 {
@@ -15,23 +17,54 @@ namespace AgendaApi.Data.Repository.Implementations
             _context = context;
             _mapper = autoMapper;
         }
-        public List<Contact> GetAll()
+
+        public Contact GetContactById(int id)
         {
-            return _context.Contacts.ToList();
+            return _context.Contacts
+                .Single(c => c.Id == id);
+        }
+        public List<ContactDto> GetAllByUser(int id)
+        {
+
+            return _context.Contacts.Include(c => c.User).Where(c => c.User.Id == id).Select(contact => new ContactDto()
+            {
+                Id = contact.Id,                
+                Description = contact.Description,                
+                Name = contact.Name,
+                CelularNumber = contact.CelularNumber,
+                TelephoneNumber = contact.TelephoneNumber,
+                UserId = contact.UserId
+            }).ToList();
         }
 
-        public void Create(CreateAndUpdateContact dto)
+        public Contact Create(CreateAndUpdateContactDto dto, int UserId)
         {
-            _context.Contacts.Add(_mapper.Map<Contact>(dto));
+            // Mapea el DTO a la entidad Contact
+            Contact contact = _mapper.Map<Contact>(dto);
+
+            // Asigna el UserId
+            contact.UserId = UserId;
+
+            // Agrega el contacto al contexto y guarda los cambios en la base de datos
+            _context.Contacts.Add(contact);
+            _context.SaveChanges();
+
+            // Devuelve el contacto mapeado a DTO
+            Contact contactDto = _mapper.Map<Contact>(contact);
+            return contactDto;
         }
 
-        public void Update(CreateAndUpdateContact dto)
-        {
-            _context.Contacts.Update(_mapper.Map<Contact>(dto));
-        }
         public void Delete(int id)
         {
             _context.Contacts.Remove(_context.Contacts.Single(c => c.Id == id));
+            _context.SaveChanges();
+        }
+
+
+        public void Update(CreateAndUpdateContactDto dto)
+        {
+            _context.Contacts.Update(_mapper.Map<Contact>(dto));
+            _context.SaveChanges();
         }
     }
 }

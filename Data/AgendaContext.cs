@@ -1,4 +1,5 @@
 ﻿using AgendaApi.Entities;
+using AgendaApi.Models.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgendaApi.Data
@@ -10,7 +11,8 @@ namespace AgendaApi.Data
 
         public AgendaContext(DbContextOptions<AgendaContext> options) : base(options) //Acá estamos llamando al constructor de DbContext que es el que acepta las opciones
         {
-
+            Users = Set<User>();
+            Contacts = Set<Contact>();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,18 +23,12 @@ namespace AgendaApi.Data
                 Name = "Karen",
                 LastName = "Lasot",
                 Password = "Pa$$w0rd",
-                Email = "karenbailapiola@gmail.com",
-                UserName = "karenpiola"
+                Email = "prueba@gmail.com",
+                UserName = "karen",
+                Rol = Rol.Admin,
+                state = State.Active
             };
-            User luis = new User()
-            {
-                Id = 2,
-                Name = "Luis Gonzalez",
-                LastName = "Gonzales",
-                Password = "lamismadesiempre",
-                Email = "elluismidetotoras@gmail.com",
-                UserName = "luismitoto"
-            };
+
 
             Contact jaimitoC = new Contact()
             {
@@ -51,29 +47,21 @@ namespace AgendaApi.Data
                 CelularNumber = 34156978,
                 Description = "Papa",
                 TelephoneNumber = 422568,
-                UserId = luis.Id,
-            };
-
-            Contact mariaC = new Contact()
-            {
-                Id = 3,
-                Name = "Maria",
-                CelularNumber = 011425789,
-                Description = "Jefa",
-                TelephoneNumber = null,
                 UserId = karen.Id,
-            };
+            };            
 
             modelBuilder.Entity<User>().HasData(
-                karen,luis);
+                karen);
 
             modelBuilder.Entity<Contact>().HasData(
-                 jaimitoC,pepeC,mariaC
+                 jaimitoC,pepeC
                  );
 
             modelBuilder.Entity<User>()
-              .HasMany<Contact>(u => u.Contacts)
-              .WithOne(c => c.User);
+            .HasMany(u => u.Contacts)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId)  // Especifica la clave externa
+            .OnDelete(DeleteBehavior.Cascade); // si un user se elimina, se eliminan sus contactos
 
             base.OnModelCreating(modelBuilder);
         }

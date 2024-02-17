@@ -1,13 +1,14 @@
 ﻿using AgendaApi.Entities;
-using AgendaApi.Models;
+using AgendaApi.Models.DTOs;
 
 namespace AgendaApi.Data.Repository.Interfaces
 {
     public interface IContactRepository
     {
-        public List<Contact> GetAll();
-        public void Create(CreateAndUpdateContact dto);
-        public void Update(CreateAndUpdateContact dto);
+        public List<Contact> GetAllByUser(int Id);
+        Contact Create(CreateAndUpdateContactDto dto, int UserId);
+        public void Update(CreateAndUpdateContactDto dto);
         public void Delete(int id);
+        public Contact GetContactById(int id);
     }
 }
