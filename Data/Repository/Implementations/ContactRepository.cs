@@ -23,18 +23,11 @@ namespace AgendaApi.Data.Repository.Implementations
             return _context.Contacts
                 .Single(c => c.Id == id);
         }
-        public List<ContactDto> GetAllByUser(int id)
+        public List<Contact> GetAllByUser(int id)
         {
-
-            return _context.Contacts.Include(c => c.User).Where(c => c.User.Id == id).Select(contact => new ContactDto()
-            {
-                Id = contact.Id,                
-                Description = contact.Description,                
-                Name = contact.Name,
-                CelularNumber = contact.CelularNumber,
-                TelephoneNumber = contact.TelephoneNumber,
-                UserId = contact.UserId
-            }).ToList();
+            return _context.Contacts
+                .Where(c => c.UserId == id)                
+                .ToList();
         }
 
         public Contact Create(CreateAndUpdateContactDto dto, int UserId)
@@ -60,11 +53,22 @@ namespace AgendaApi.Data.Repository.Implementations
             _context.SaveChanges();
         }
 
-
-        public void Update(CreateAndUpdateContactDto dto)
+        // El método toma un objeto DTO y lo mapea a una entidad, actualiza esa entidad
+        // en el contexto (instancia de DbContext que representa el estado de las entidades) y luego guarda los cambios en la DB
+        public void Update(CreateAndUpdateContactDto dto, int userId)
         {
-            _context.Contacts.Update(_mapper.Map<Contact>(dto));
-            _context.SaveChanges();
+            Contact existingContact = _context.Contacts.SingleOrDefault(c => c.Id == dto.Id && c.UserId == userId);
+
+            if (existingContact != null)
+            {
+                _mapper.Map(dto, existingContact);
+                _context.SaveChanges();
+            }
+
+            //Contact contact = _mapper.Map<Contact>(dto);            
+            //contact.UserId = userId;           
+            //_context.Contacts.Update(contact);
+            //_context.SaveChanges();      
         }
     }
 }

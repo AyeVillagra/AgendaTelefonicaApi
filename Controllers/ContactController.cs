@@ -1,12 +1,9 @@
-﻿using AgendaApi.Data.Repository.Implementations;
-using AgendaApi.Data.Repository.Interfaces;
+﻿using AgendaApi.Data.Repository.Interfaces;
 using AgendaApi.Entities;
 using AgendaApi.Models.DTOs;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+
 
 namespace AgendaApi.Controllers
 {
@@ -27,23 +24,17 @@ namespace AgendaApi.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            try
-            {
-                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
-                var contacts = _contactRepository.GetAllByUser(userId);
-                return Ok(contacts);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in GetAll: {ex.Message}");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
-            }
+            int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
+            return Ok(_contactRepository.GetAllByUser(userId));
+            
+            
         }
 
         [HttpGet]
         [Route("{Id}")]
         public IActionResult GetOne(int Id)
         {
+            int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
             return Ok(_contactRepository.GetContactById(Id));
         }
 
@@ -53,7 +44,7 @@ namespace AgendaApi.Controllers
         {
             try
             {
-                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
                 Contact c = _contactRepository.Create(createContactDto, userId);
                 return Created("Created", c);
             }
@@ -69,7 +60,7 @@ namespace AgendaApi.Controllers
         public IActionResult UpdateContact(CreateAndUpdateContactDto dto)
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
-            _contactRepository.Update(dto);
+            _contactRepository.Update(dto, userId);
             return NoContent();
         }
 
