@@ -57,11 +57,18 @@ namespace AgendaApi.Controllers
 
         [HttpPut]
         [Route("{Id}")]
-        public IActionResult UpdateContact(CreateAndUpdateContactDto dto)
+        public IActionResult UpdateContact(CreateAndUpdateContactDto dto, int Id)
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
-            _contactRepository.Update(dto, userId);
-            return NoContent();
+            if (_contactRepository.ContactBelongsToUser(Id, userId))
+            {                
+                _contactRepository.Update(dto, userId);
+                return Ok();
+            }
+            else 
+            {
+                return NotFound(); // O un código de estado diferente que indique que el contacto no pertenece al usuario
+            }
         }
 
         [HttpDelete]
@@ -69,8 +76,16 @@ namespace AgendaApi.Controllers
         public IActionResult DeleteContactById(int Id)
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
-            _contactRepository.Delete(Id);
-            return Ok();
+            // Verifica si el contacto pertenece al usuario antes de eliminar
+            if (_contactRepository.ContactBelongsToUser(Id, userId))
+            {
+                _contactRepository.Delete(Id);
+                return Ok();
+            }
+            else
+            {
+                return NotFound(); // O un código de estado diferente que indique que el contacto no pertenece al usuario
+            }
         }
     }
 }

@@ -46,17 +46,25 @@ namespace AgendaApi.Data.Repository.Implementations
             Contact contactDto = _mapper.Map<Contact>(contact);
             return contactDto;
         }
-
+        public bool ContactBelongsToUser(int contactId, int userId)
+        {
+            return _context.Contacts.Any(c => c.Id == contactId && c.UserId == userId);
+        }
         public void Delete(int id)
         {
-            _context.Contacts.Remove(_context.Contacts.Single(c => c.Id == id));
-            _context.SaveChanges();
+            Contact contactToDelete = _context.Contacts.SingleOrDefault(c => c.Id == id);
+
+            if (contactToDelete != null)
+            {
+                _context.Contacts.Remove(contactToDelete);
+                _context.SaveChanges();
+            }
         }
 
         // El método toma un objeto DTO y lo mapea a una entidad, actualiza esa entidad
         // en el contexto (instancia de DbContext que representa el estado de las entidades) y luego guarda los cambios en la DB
         public void Update(CreateAndUpdateContactDto dto, int userId)
-        {
+        {            
             Contact existingContact = _context.Contacts.SingleOrDefault(c => c.Id == dto.Id && c.UserId == userId);
 
             if (existingContact != null)
@@ -64,11 +72,7 @@ namespace AgendaApi.Data.Repository.Implementations
                 _mapper.Map(dto, existingContact);
                 _context.SaveChanges();
             }
-
-            //Contact contact = _mapper.Map<Contact>(dto);            
-            //contact.UserId = userId;           
-            //_context.Contacts.Update(contact);
-            //_context.SaveChanges();      
         }
+
     }
 }

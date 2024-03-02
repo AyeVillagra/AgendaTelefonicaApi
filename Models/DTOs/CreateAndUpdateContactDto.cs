@@ -11,7 +11,6 @@ namespace AgendaApi.Models.DTOs
         public string Name { get; set; }
         public int? CelularNumber { get; set; }
         public int? TelephoneNumber { get; set; }
-        public string Description { get; set; }
-        public User? User;
+        public string Description { get; set; }    
     }
 }
