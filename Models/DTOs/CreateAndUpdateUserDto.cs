@@ -15,6 +15,7 @@ namespace AgendaApi.Models.DTOs
         public string Password { get; set; }
 
         [Required]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
 
         [Required]

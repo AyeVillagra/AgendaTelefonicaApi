@@ -9,7 +9,9 @@ namespace AgendaApi.Models.DTOs
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        [RegularExpression(@"^\d+$", ErrorMessage = "CelularNumber must be a number")]
         public int? CelularNumber { get; set; }
+        [RegularExpression(@"^\d+$", ErrorMessage = "TelephoneNumber must be a number")]
         public int? TelephoneNumber { get; set; }
         public string Description { get; set; }    
     }

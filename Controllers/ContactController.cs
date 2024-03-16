@@ -31,11 +31,11 @@ namespace AgendaApi.Controllers
         }
 
         [HttpGet]
-        [Route("{Id}")]
+        [Route("{Id}")]        
         public IActionResult GetOne(int Id)
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
-            return Ok(_contactRepository.GetContactById(Id));
+            return Ok(_contactRepository.GetContactById(Id, userId)); // Pasar userId al método GetContactById
         }
 
 
@@ -61,13 +61,25 @@ namespace AgendaApi.Controllers
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value);
             if (_contactRepository.ContactBelongsToUser(Id, userId))
-            {                
-                _contactRepository.Update(dto, userId);
-                return Ok();
-            }
-            else 
             {
-                return NotFound(); // O un código de estado diferente que indique que el contacto no pertenece al usuario
+                _contactRepository.Update(dto, userId);
+
+                // Después de actualizar el contacto, obtener el contacto actualizado de la base de datos
+                Contact updatedContact = _contactRepository.GetContactById(Id, userId);
+                
+                if (updatedContact != null)
+                {
+                    // Devolver el contacto actualizado como parte de la respuesta
+                    return Ok(updatedContact);
+                }
+                else
+                {                    
+                    return NotFound("Updated contact not found");
+                }
+            }
+            else
+            {
+                return BadRequest("Contact does not belong to the current user");
             }
         }
 
@@ -84,7 +96,7 @@ namespace AgendaApi.Controllers
             }
             else
             {
-                return NotFound(); // O un código de estado diferente que indique que el contacto no pertenece al usuario
+                return NotFound();
             }
         }
     }

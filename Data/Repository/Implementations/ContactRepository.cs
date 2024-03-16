@@ -18,10 +18,21 @@ namespace AgendaApi.Data.Repository.Implementations
             _mapper = autoMapper;
         }
 
-        public Contact GetContactById(int id)
+        public Contact GetContactById(int id, int userId)
         {
-            return _context.Contacts
-                .Single(c => c.Id == id);
+            // Buscar el contacto por ID y pertenencia al usuario
+            Contact contact = _context.Contacts.SingleOrDefault(c => c.Id == id && c.UserId == userId);
+
+            // Si el contacto no existe o no pertenece al usuario, lanzar una excepción o devolver null
+            if (contact == null)
+            {
+                // Puedes elegir lanzar una excepción NotFound o simplemente devolver null
+                throw new Exception("Contact not found or does not belong to the user."); // Lanzar una excepción
+                                                                                          // Opción alternativa: return null; // Devolver null
+            }
+
+            // Devolver el contacto encontrado
+            return contact;
         }
         public List<Contact> GetAllByUser(int id)
         {

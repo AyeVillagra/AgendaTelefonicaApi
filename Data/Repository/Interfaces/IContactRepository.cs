@@ -10,6 +10,6 @@ namespace AgendaApi.Data.Repository.Interfaces
         public void Update(CreateAndUpdateContactDto dto, int UserId);
         public void Delete(int id);
         bool ContactBelongsToUser(int contactId, int userId);
-        public Contact GetContactById(int id);
+        Contact GetContactById(int id, int userId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using AgendaApi.Models.Enum;
+using System.Xml.Linq;
 
 namespace AgendaApi.Models.DTOs
 {    
@@ -10,9 +11,10 @@ namespace AgendaApi.Models.DTOs
             public string Email { get; set; }
             public string Password { get; set; }
             public string UserName { get; set; }
-    
+            public State State { get; set; } // Dado que el borrado del User es lógico, traigo el state para ver el estado del usuario y saber si está activo o no
 
-            public UserDto()
+
+        public UserDto()
             {
                 // Inicializar propiedades para evitar advertencias CS8618
                 Name = string.Empty;
