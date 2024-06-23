@@ -20,9 +20,13 @@ namespace AgendaApi.Models.DTOs
 
         [Required]
         public string UserName { get; set; }
+
+        public State State { get; set; }
+
+
+        public Rol Rol { get; set; } 
+
         
 
-        public Rol rol { get; set; } = Rol.User;
-       
     }
 }

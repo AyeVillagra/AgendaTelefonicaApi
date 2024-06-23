@@ -12,7 +12,7 @@ namespace AgendaApi.Models.DTOs
             public string Password { get; set; }
             public string UserName { get; set; }
             public State State { get; set; } // Dado que el borrado del User es lógico, traigo el state para ver el estado del usuario y saber si está activo o no
-
+            public Rol Rol { get; set; }
 
         public UserDto()
             {

@@ -25,6 +25,7 @@ namespace AgendaApi.Controllers
         public IActionResult GetAll()
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
+            
             return Ok(_contactRepository.GetAllByUser(userId));
             
             
