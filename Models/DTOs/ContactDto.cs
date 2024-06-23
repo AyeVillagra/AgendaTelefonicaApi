@@ -9,5 +9,13 @@
         public string Description { get; set; }
         public int UserId { get; set; }
 
+
+
+        public ContactDto() 
+        {
+            
+            Name = string.Empty;
+            Description = string.Empty;
+        }
     }
 }

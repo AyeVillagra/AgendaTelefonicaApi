@@ -12,7 +12,7 @@ namespace AgendaApi.Data
         public AgendaContext(DbContextOptions<AgendaContext> options) : base(options) //Acá estamos llamando al constructor de DbContext que es el que acepta las opciones
         {
             Users = Set<User>();
-            Contacts = Set<Contact>();
+            Contacts = Set<Contact>();            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace AgendaApi.Data
             Contact jaimitoC = new Contact()
             {
                 Id = 1,
-                Name = "Jaimito",
+                Name = "Jaimito",                
                 CelularNumber = 341457896,
                 Description = "Plomero",
                 TelephoneNumber = null,
@@ -43,7 +43,7 @@ namespace AgendaApi.Data
             Contact pepeC = new Contact()
             {
                 Id = 2,
-                Name = "Pepe",
+                Name = "Pepe",                
                 CelularNumber = 34156978,
                 Description = "Papa",
                 TelephoneNumber = 422568,
