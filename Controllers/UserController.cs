@@ -117,5 +117,18 @@ namespace AgendaApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("archive/{Id}")]
+        public IActionResult ArchiveUser(int Id)
+        {
+            try
+            {
+                _userRepository.Archive(Id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace AgendaApi.Data
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-
+  
         public AgendaContext(DbContextOptions<AgendaContext> options) : base(options) //Acá estamos llamando al constructor de DbContext que es el que acepta las opciones
         {
             Users = Set<User>();
@@ -27,35 +27,11 @@ namespace AgendaApi.Data
                 UserName = "karen",
                 Rol = Rol.Admin,
                 state = State.Active
-            };
-
-
-            Contact jaimitoC = new Contact()
-            {
-                Id = 1,
-                Name = "Jaimito",                
-                CelularNumber = 341457896,
-                Description = "Plomero",
-                TelephoneNumber = null,
-                UserId = karen.Id,
-            };
-
-            Contact pepeC = new Contact()
-            {
-                Id = 2,
-                Name = "Pepe",                
-                CelularNumber = 34156978,
-                Description = "Papa",
-                TelephoneNumber = 422568,
-                UserId = karen.Id,
-            };            
+            };                         
 
             modelBuilder.Entity<User>().HasData(
                 karen);
-
-            modelBuilder.Entity<Contact>().HasData(
-                 jaimitoC,pepeC
-                 );
+            
 
             modelBuilder.Entity<User>()
             .HasMany(u => u.Contacts)
