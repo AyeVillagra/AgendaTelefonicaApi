@@ -36,7 +36,15 @@ namespace AgendaApi.Controllers
         public IActionResult GetOne(int Id)
         {
             int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
-            return Ok(_contactRepository.GetContactById(Id, userId)); // Pasar userId al método GetContactById
+            var contact = _contactRepository.GetContactById(Id, userId);
+            if (contact != null)
+            {
+                return Ok(contact);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
 
@@ -46,14 +54,20 @@ namespace AgendaApi.Controllers
             try
             {
                 int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
-                Contact c = _contactRepository.Create(createContactDto, userId);
+                // Crear una lista de CreateAndUpdateNumberDto a partir de createContactDto.Numbers
+                var numbersDto = createContactDto.Numbers.Select(n => new CreateAndUpdateNumberDto
+                {
+                    ContactNumber = n.ContactNumber,
+                    Type = n.Type
+                }).ToList();
+
+                Contact c = _contactRepository.Create(createContactDto, numbersDto, userId);                
                 return Created("Created", c);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
         }
 
         [HttpPut]

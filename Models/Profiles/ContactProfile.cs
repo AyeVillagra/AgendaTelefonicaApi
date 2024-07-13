@@ -8,8 +8,15 @@ namespace AgendaApi.Models.Profiles
     {
         public ContactProfile()
         {
-            CreateMap<Contact, ContactDto>();
-            CreateMap<CreateAndUpdateContactDto, Contact>();
+
+            CreateMap<CreateAndUpdateContactDto, Contact>()
+      .ForMember(dest => dest.Numbers, opt => opt.MapFrom(src => src.Numbers));
+
+            CreateMap<Contact, CreateAndUpdateContactDto>()
+                .ForMember(dest => dest.Numbers, opt => opt.MapFrom(src => src.Numbers));
+
+            
+
         }
     }
 }

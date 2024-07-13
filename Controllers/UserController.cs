@@ -9,7 +9,7 @@ namespace AgendaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;

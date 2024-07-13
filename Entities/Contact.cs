@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AgendaApi.Entities
@@ -9,8 +10,7 @@ namespace AgendaApi.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
-        public int CelularNumber { get; set; }
-        public int? TelephoneNumber { get; set; }
+        public ICollection<Number> Numbers { get; set; } = new List<Number>();
         public string Description { get; set; }
         [ForeignKey("UserId")]
         public int UserId { get; set; }

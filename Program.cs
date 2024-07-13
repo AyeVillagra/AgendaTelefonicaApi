@@ -49,6 +49,14 @@ builder.Services.AddDbContext<AgendaContext>
     (dbContextOptions => dbContextOptions.UseSqlite(
     builder.Configuration["ConnectionStrings:AgendaAPIDBConnectionString"]));
 
+// Configuración de serialización JSON
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {        
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
+
 builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntenticación que tenemos que elegir después en PostMan para pasarle el token
     .AddJwtBearer(options => //Acá definimos la configuración de la autenticación. le decimos qué cosas queremos comprobar. La fecha de expiración se valida por defecto.
     {
@@ -69,6 +77,7 @@ var config = new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new ContactProfile());
     cfg.AddProfile(new UserProfile());
+    cfg.AddProfile(new NumberProfile());
 });
 var mapper = config.CreateMapper();
 
@@ -76,6 +85,7 @@ var mapper = config.CreateMapper();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<IContactRepository,ContactRepository>();
+builder.Services.AddScoped<INumberRepository, NumberRepository>();
 #endregion
 
 var app = builder.Build();
