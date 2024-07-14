@@ -28,7 +28,7 @@ namespace AgendaApi.Data.Repository.Implementations
             var number = _mapper.Map<Number>(dto);
             number.ContactId = contactId;
             _context.Numbers.Add(number);
-            _context.SaveChanges();
+            
             return number;
         }
 
@@ -38,7 +38,7 @@ namespace AgendaApi.Data.Repository.Implementations
             if (number != null)
             {
                 _mapper.Map(dto, number);
-                _context.SaveChanges();
+                
             }
         }
 
@@ -47,8 +47,7 @@ namespace AgendaApi.Data.Repository.Implementations
             var number = _context.Numbers.SingleOrDefault(n => n.Id == numberId);
             if (number != null)
             {
-                _context.Numbers.Remove(number);
-                _context.SaveChanges();
+                _context.Numbers.Remove(number);              
             }
         }
     }

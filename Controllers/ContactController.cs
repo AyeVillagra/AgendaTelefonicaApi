@@ -54,8 +54,8 @@ namespace AgendaApi.Controllers
             try
             {
                 int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!.Value);
-                // Crear una lista de CreateAndUpdateNumberDto a partir de createContactDto.Numbers
-                var numbersDto = createContactDto.Numbers.Select(n => new CreateAndUpdateNumberDto
+                // Crear una lista de NumberDto a partir de createContactDto.Numbers
+                var numbersDto = createContactDto.Numbers.Select(n => new NumberDto
                 {
                     ContactNumber = n.ContactNumber,
                     Type = n.Type

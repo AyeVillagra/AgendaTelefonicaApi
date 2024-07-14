@@ -11,9 +11,6 @@ namespace AgendaApi.Models.Profiles
         {
             CreateMap<NumberDto, Number>();
             CreateMap<Number, NumberDto>();
-
-            CreateMap<CreateAndUpdateNumberDto, Number>();
-            CreateMap<Number, CreateAndUpdateNumberDto>();
         }
     }
 }

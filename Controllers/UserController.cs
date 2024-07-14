@@ -62,6 +62,7 @@ namespace AgendaApi.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult CreateUser(CreateAndUpdateUserDto dto)
         {
             try

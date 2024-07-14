@@ -47,7 +47,7 @@ namespace AgendaApi.Data.Repository.Implementations
                 .ToList();
         }
 
-        public Contact Create(CreateAndUpdateContactDto dto, List<CreateAndUpdateNumberDto> numbersDto, int UserId)
+        public Contact Create(CreateAndUpdateContactDto dto, List<NumberDto> numbersDto, int UserId)
         {
             // Mapea el DTO a la entidad Contact
             Contact contact = _mapper.Map<Contact>(dto);
@@ -96,24 +96,32 @@ namespace AgendaApi.Data.Repository.Implementations
 
             if (existingContact != null)
             {
+                // mapea el dto recibido como parámetro con el contacto encontrado en la db
                 _mapper.Map(dto, existingContact);
 
-                foreach (var number in existingContact.Numbers)
+                // Eliminar números que no están en el dto que llega desde el front                
+                foreach (var number in existingContact.Numbers.ToList())
                 {
                     var numberDto = dto.Numbers.FirstOrDefault(n => n.Id == number.Id);
-                    if (numberDto != null)
+                    if (numberDto == null)
                     {
-                        _mapper.Map(numberDto, number);
-                    }
-                    else
-                    {
-                        _context.Numbers.Remove(number);
+                        _numberRepository.DeleteNumber(number.Id);
                     }
                 }
 
-                foreach (var numberDto in dto.Numbers.Where(n => n.Id == 0))
+                // Actualizar o agregar nuevos números
+                foreach (var numberDto in dto.Numbers)
                 {
-                    _numberRepository.AddNumber(numberDto, existingContact.Id);
+                    // numero nuevo
+                    if (numberDto.Id == 0 || numberDto.Id == null)
+                    {
+                        _numberRepository.AddNumber(numberDto, existingContact.Id);
+                    }
+                    else
+                    {
+                        //  actualizar un número existente
+                        _numberRepository.UpdateNumber(numberDto);
+                    }
                 }
 
                 _context.SaveChanges();
