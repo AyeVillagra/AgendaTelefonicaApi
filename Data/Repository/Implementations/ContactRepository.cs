@@ -99,7 +99,8 @@ namespace AgendaApi.Data.Repository.Implementations
                 // mapea el dto recibido como parámetro con el contacto encontrado en la db
                 _mapper.Map(dto, existingContact);
 
-                // Eliminar números que no están en el dto que llega desde el front                
+                // Eliminar de la db los números que no están en el dto que llega desde el front
+                // itera sobre todos los numeros que tiene el contacto en la db y compara con el dto que llega
                 foreach (var number in existingContact.Numbers.ToList())
                 {
                     var numberDto = dto.Numbers.FirstOrDefault(n => n.Id == number.Id);
@@ -110,12 +111,16 @@ namespace AgendaApi.Data.Repository.Implementations
                 }
 
                 // Actualizar o agregar nuevos números
+                // iteramos sobre los numeros que llegan en el dto desde el front
                 foreach (var numberDto in dto.Numbers)
                 {
                     // numero nuevo
                     if (numberDto.Id == 0 || numberDto.Id == null)
                     {
-                        _numberRepository.AddNumber(numberDto, existingContact.Id);
+                        if (!existingContact.Numbers.Any(n => n.ContactNumber == numberDto.ContactNumber))
+                        {
+                            _numberRepository.AddNumber(numberDto, existingContact.Id);
+                        }
                     }
                     else
                     {
