@@ -12,16 +12,20 @@ namespace AgendaApi.Controllers
     [Authorize]
     public class UserController : Controller
     {
+        // private readonly: vinculado al encapsulamiento
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         
         public UserController(IUserRepository userRepository, IMapper mapper)
         {
+            //inicialización de dependencias en el constructor
+            // el controlador tiene así acceso a las implementaciones del repository y el mapper
             _userRepository = userRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
             try

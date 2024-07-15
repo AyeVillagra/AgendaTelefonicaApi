@@ -6,13 +6,13 @@ namespace AgendaApi.Data
 {
     public class AgendaContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; } //DbSet es una propiedad; estas entidades se mapearan a tablas 
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Number> Numbers { get; set; }
 
         public AgendaContext(DbContextOptions<AgendaContext> options) : base(options) //Acá estamos llamando al constructor de DbContext que es el que acepta las opciones
         {
-            Users = Set<User>();
+            Users = Set<User>(); // se inicializan las dbSet
             Contacts = Set<Contact>();
             Numbers = Set<Number>();
         }

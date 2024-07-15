@@ -1,5 +1,3 @@
-using AgendaApi.Controllers;
-using AgendaApi.Data.Repository;
 using AgendaApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -71,6 +69,11 @@ builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntentica
         };
     }
 );
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+});
 
 
 var config = new MapperConfiguration(cfg =>
