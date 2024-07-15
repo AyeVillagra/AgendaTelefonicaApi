@@ -97,26 +97,42 @@ namespace AgendaApi.Controllers
 
         [HttpDelete]
         [Route("{Id}")]
-        public IActionResult DeleteUser(int Id) {
+        public IActionResult DeleteUser(int Id)
+        {
             try
             {
-                var user = _userRepository.GetById(Id);
-
-                if (user != null && user.Rol == 0)
+                // Obtener del claim, el rol del usuario logueado
+                var userRoleClaim = User.Claims.FirstOrDefault(c => c.Type == "role");
+                if (userRoleClaim == null)
                 {
-                    _userRepository.Delete(Id);
-                }
-                else if (user != null)
-                {
-                    _userRepository.Archive(Id);
-                }
-                else
-                {
-                    return NotFound();
+                    return Forbid();
                 }
 
-                return StatusCode(204);
+                    if (!int.TryParse(userRoleClaim.Value, out int userRole))
+                    {
+                        return Forbid();
+                    }
+
+                    // Verificar si el usuario logueado tiene o no el rol de administrador (rol 0)
+                    if (userRole != 0)
+                    {
+                        return Forbid();
+                    }
+
+
+                    var user = _userRepository.GetById(Id);
+
+                    if (user != null)
+                    {
+                        _userRepository.Archive(Id);
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }                
             }
+
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
