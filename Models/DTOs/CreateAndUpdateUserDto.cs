@@ -15,7 +15,7 @@ namespace AgendaApi.Models.DTOs
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "La contraseña es obligatoria")]
-        [StringLength(50, MinimumLength = 8, ErrorMessage = "La contraseña debe tener entre 8 y 50 caracteres")]
+        [StringLength(15, MinimumLength = 8, ErrorMessage = "La contraseña debe tener entre 8 y 15 caracteres")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$", ErrorMessage = "La contraseña debe contener al menos una mayúscula, una minúscula y un número")]
         public string Password { get; set; }
 
